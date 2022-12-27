@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class AdminModel extends Model
 {
-    protected $table      = 'Admins';
+    protected $table      = 'admin';
 		protected $primaryKey = 'adminId';
 
 		protected $useAutoIncrement = false;

@@ -5,14 +5,14 @@ namespace App\Libraries;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 
-class BaseAPI extends ResourceController
+abstract class BaseAPI extends ResourceController
 {
-    use ResponseTrait;
     protected $modelName = '';
     protected $format    = 'json';
 
     public function index()
-    {
+	{
+		return	$this->respond($this->model->findAll());
     }
 
     public function show($id = null)

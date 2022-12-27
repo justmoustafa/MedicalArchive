@@ -2,13 +2,15 @@
 
 namespace Config;
 use App\Libraries\Container;
-use App\Controllers\UserController;
+use App\Controllers\PatientController;
 use App\Controllers\PatientAPI;
 use App\Models\PatientModel;
+use App\Models\HospitalModel;
 use CodeIgniter\Model;
 use App\Entities\PatientEntity;
 use CodeIgniter\Entity\Entity;
 use App\Libraries\UserLibrary;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -44,30 +46,30 @@ $routes->set404Override();
 
 
 //routes for APIs
-$routes->resource('PatientAPI',['websafe' => 1,'controller'=>'APIs\PatientAPI']);
-$routes->resource('AdminAPI',['websafe' => 1,'controller'=>'APIs\AdminAPI']);
-$routes->resource('DoctorAPI',['websafe' => 1,'controller'=>'APIs\DoctorAPI']);
-$routes->resource('ReceptionistAPI',['websafe' => 1,'controller'=>'APIs\ReceptionistAPI']);
-$routes->resource('HospitalAPI',['websafe' => 1,'controller'=>'APIs\HospitalAPI']);
+$routes->resource('PatientAPI',['websafe' => 1,'controller' => 'APIs\PatientAPI']);
+$routes->resource('AdminAPI',['websafe' => 1]);
+$routes->resource('DoctorAPI',['websafe' => 1]);
+$routes->resource('ReceptionistAPI',['websafe' => 1]);
+$routes->resource('HospitalAPI',['websafe' => 1]);
 
-$routes->resource('DepartmentAPI',['websafe' => 1,'controller'=>'APIs\DepartmentAPI']);
-$routes->resource('DoctorHospitalAPI',['websafe' => 1,'controller'=>'APIs\DoctorHospitalAPI']);
-$routes->resource('ExaminationAPI',['websafe' => 1,'controller'=>'APIs\ExaminationAPI']);
-$routes->resource('NurseAPI',['websafe' => 1,'controller'=>'APIs\NurseAPI']);
-$routes->resource('NurseHospitalAPI',['websafe' => 1,'controller'=>'APIs\NurseHospitalAPI']);
+$routes->resource('DepartmentAPI',['websafe' => 1]);
+$routes->resource('DoctorHospitalAPI',['websafe' => 1]);
+$routes->resource('ExaminationAPI',['websafe' => 1]);
+$routes->resource('NurseAPI',['websafe' => 1]);
+$routes->resource('NurseHospitalAPI',['websafe' => 1]);
 
-$routes->resource('PharmacistAPI',['websafe' => 1,'controller'=>'APIs\PharmacistAPI']);
-$routes->resource('PharmacistConfirmAPI',['websafe' => 1,'controller'=>'APIs\PharmacistConfirmAPI']);
-$routes->resource('PharmacistHospitalAPI',['websafe' => 1,'controller'=>'APIs\PharmacistHospitalAPI']);
-$routes->resource('ReceptionistHospitalAPI',['websafe' => 1,'controller'=>'APIs\ReceptionistHospitalAPI']);
-$routes->resource('WaitListAPI',['websafe' => 1,'controller'=>'APIs\WaitListAPI']);
+$routes->resource('PharmacistAPI',['websafe' => 1]);
+$routes->resource('PharmacistConfirmAPI',['websafe' => 1]);
+$routes->resource('PharmacistHospitalAPI',['websafe' => 1]);
+$routes->resource('ReceptionistHospitalAPI',['websafe' => 1]);
+$routes->resource('WaitListAPI',['websafe' => 1]);
 
 $routes->get('/', static function()use($container)
 {
 
-    $container->set(Model::class, PatientModel::class); 
-    $container->set(Entity::class, PatientEntity::class); 
-    $pcc = $container->get(UserController::class);
+    $container->set(Model::class, HospitalModel::class); 
+    $container->set(Entity::class, Entity::class); 
+    $pcc = $container->get(PatientController::class);
    return $pcc->index(); 
 });
 

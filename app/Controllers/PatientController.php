@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\UserLibrary;
 
-class UserController extends BaseController 
+class PatientController extends BaseController 
 {
 
     public function __construct(private UserLibrary $userLib)
@@ -13,8 +13,8 @@ class UserController extends BaseController
 
     public function index()
     {
-        echo "hello, world";
-    }
+			echo 'hello, world!';
+	}
     
 }
 
