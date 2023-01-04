@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\APIs;
+namespace App\Controllers;
 
 use App\Libraries\BaseAPI;
 

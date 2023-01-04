@@ -46,7 +46,7 @@ $routes->set404Override();
 
 
 //routes for APIs
-$routes->resource('PatientAPI',['websafe' => 1,'controller' => 'APIs\PatientAPI']);
+$routes->resource('PatientAPI');
 $routes->resource('AdminAPI',['websafe' => 1]);
 $routes->resource('DoctorAPI',['websafe' => 1]);
 $routes->resource('ReceptionistAPI',['websafe' => 1]);

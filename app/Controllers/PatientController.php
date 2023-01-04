@@ -13,7 +13,10 @@ class PatientController extends BaseController
 
     public function index()
     {
-			echo 'hello, world!';
+$this->userLib->retrieve(1);
+echo '<pre>';
+		var_dump($this->userLib->getEntity());
+echo '</pre>';
 	}
     
 }

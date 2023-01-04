@@ -6,5 +6,5 @@ use App\Libraries\BaseAPI;
 
 class NurseAPI extends BaseAPI
 {
-    protected $modelName = 'App\Models\Nurseodel';
+    protected $modelName = 'App\Models\NurseModel';
 }

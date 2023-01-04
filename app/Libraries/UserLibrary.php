@@ -26,6 +26,7 @@ class UserLibrary
         if($this->Model->find($userId))
         {
             $this->Entity = $this->Model->find($userId);
+			return true;
         }
 
         return false;

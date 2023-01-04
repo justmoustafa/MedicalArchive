@@ -14,7 +14,7 @@ abstract class BaseAPI extends ResourceController
 	{
 		return	$this->respond($this->model->findAll());
     }
-
+ 
     public function show($id = null)
     {
         if(!$id == null && $this->model->find($id)) return $this->respond($this->model->find($id), 200);
@@ -26,8 +26,7 @@ abstract class BaseAPI extends ResourceController
     {
         $data = $this->request->getPost();
 
-        if($this->model->find($data['id'])) return $this->failResourceExists('this user already exists');
-
+    //    if($this->model->find($data['id'])) return $this->failResourceExists('this user already exists');
 
         $insertResult = $this->model->insert($data);
 
@@ -42,11 +41,11 @@ abstract class BaseAPI extends ResourceController
         return $this->respondCreated();
     }
 
-    public function update($id = null)
+	public function update($id = null)
     {
-        $data = $this->request->getPost();
+        $data = $this->request->getRawInput();
 
-        if($this->model->find($id)) return $this->failResourceExists('this user does not exist');
+        if(!$this->model->find($id)) return $this->failResourceExists('this user does not exist');
 
         $insertResult = $this->model->update($id ,$data);
 
@@ -76,7 +75,7 @@ abstract class BaseAPI extends ResourceController
         {
             return $this->failServerError();
         }
-        $this->respondDeleted($data);
+        return $this->respondDeleted();
     }
 
 }

@@ -14,7 +14,7 @@ class PharmacistModel extends Model
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'doctorId'
+		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'pharmacistId'
 			
 			                          , 'image', 'idImage', 'password','goodStanding','professionLicense','hospitalId'];
 
