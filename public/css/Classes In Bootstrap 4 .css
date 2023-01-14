@@ -1,0 +1,130 @@
+/* Bootstrap 3 */
+
+/* My Framework */
+
+
+
+
+/*
+
+container == > width: 1170px
+container-fluid ==> width: full width
+
+col-[screen name] ===> // col-lg        ----->  لو ماحطتش عد وحدات هيقسمهم بالتساوي          ********
+
+#############################################################################
+
+bg-light {
+    background-color: #f8f9fa!important;                                                         ********
+}
+
+#############################################################################
+
+.navbar-toggler {                                                                                ********
+    padding: .25rem .75rem;
+    font-size: 1.25rem;
+    line-height: 1;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+}
+
+#############################################################################
+
+.mr-auto {                                                                                        ********
+    margin-right: auto!important;
+}
+
+
+ml-auto {                                                                                         ********
+    margin-left: auto!important;
+}
+
+#############################################################################
+
+d-[screen name]-block == > d-md-block // display: block!important;
+
+#############################################################################
+
+hidden-[screen name] ===> // hidden-xs
+visible-[screen name]-[block, inline, inline-block] ===> // visible-xs-block
+
+#############################################################################
+
+clearfix After any float
+
+#############################################################################
+
+col-[screen name]-offset-[number of unit] ==> col-md-offset-4 // margin-left: 33.3333%  *** bootstrap 4 ==> offset-lg-4***
+
+#############################################################################
+
+col-col-[screen name]-push-[number of unit] ==> col-lg-push-3 // left: 25%
+col-col-[screen name]-pull-[number of unit] ==> col-lg-pull-3 // right: 25%
+
+#############################################################################
+
+img-responsive //   display: block;  max-width: 100%;  height: auto;
+
+#############################################################################
+
+.img-thumbnail {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    padding: 4px;
+    line-height: 1.42857143;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#############################################################################
+
+img-circle //      border-radius: 50%;
+
+#############################################################################
+
+lead // in paragraph
+
+#############################################################################
+
+text-center // text-align: center
+
+#############################################################################
+
+center-block //     display: block;  margin-right: auto;  margin-left: auto;
+
+#############################################################################
+
+list-unstyled //   list-style: nono;  padding-left: 0
+
+#############################################################################
+
+pull-left  // float: left!important;
+
+#############################################################################
+
+
+<form role="form"/></form>
+
+
+form-inline //   <form class="form-inline"></form>
+
+form-control //   <input class="form-control"></input>
+
+form-group //   <div class="form-group"> </div>> ==> margin-bottom: 15px;
+
+input-lg //       input ==> height: 46px; padding: 10px 16px; font-size: 18px; line-height: 1.33
+
+#############################################################################
+#############################################################################
+
+$$ Navbr $$
+--------------
+
+
+navbar-default & navbar-inverse ==> اللون الابيض العادي & اعكس الالوان
+navbar-fixed-top/bottom ==> ثابت فوق / تحت 
+
+*/
