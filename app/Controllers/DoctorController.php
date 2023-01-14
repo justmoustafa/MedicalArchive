@@ -10,18 +10,13 @@ use App\Libraries\DepartmentLibrary;
 use App\Libraries\PrescriptionLibrary;
 
 
-class PatientController extends BaseController 
+class DoctorController extends BaseController 
 {
 
     public function __construct(private PatientLibrary $patientLib, private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib )
     {
 			$this->request = service('request');
     }
-
-    public function index()
-    {
-		return view('index');
-	}
 
 	public function login(){
 
@@ -45,11 +40,11 @@ class PatientController extends BaseController
 				];
 
 				if (! $this->validate($validationRules)) {
-                return view('patientLogin', [
+                return view('doctorLogin', [
                     'validation' => $this->validator,
                 ]);
             }
-				$userExists = $this->patientLib->retrieve($loginData['id']);	
+				$userExists = $this->doctorLib->retrieve($loginData['id']);	
 				if( $userExists ){
 					$userData = $this->patientLib->getEntity()->toArray();
 
@@ -167,6 +162,7 @@ class PatientController extends BaseController
 		$exams = $this->examLib->retrieveWhere('patientId',session()->get('id'));
 
 		if(count($exams) > 0){
+
 				foreach( $exams as $exam ){
 						$this->hospitalLib->retrieve( $exam->hospitalId );
 						$this->doctorLib->retrieve( $exam->doctorId );

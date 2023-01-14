@@ -4,17 +4,17 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class WaitingListModel extends Model
+class WaitListModel extends Model
 {
-    protected $table      = 'WaitList';
-    protected $primaryKey = '';
+    protected $table      = 'waitList';
+    protected $primaryKey = 'id';
 
-    protected $useAutoIncrement = false;
+    protected $useAutoIncrement = true;
 
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['patientId', 'hospitalId', 'departmentId', 'receptionistsId', 'date', 'confirmEntrance'];
+		protected $allowedFields = ['id','patientId', 'hospitalId', 'departmentId', 'receptionistId', 'date', 'confirmEntrance'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

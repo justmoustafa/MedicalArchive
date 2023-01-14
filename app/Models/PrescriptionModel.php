@@ -4,19 +4,17 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class PharmacistModel extends Model
+class PrescriptionModel extends Model
 {
-    protected $table      = 'pharmacists';
-    protected $primaryKey = 'pharmacistId';
+    protected $table      = 'prescriptions';
+		protected $primaryKey = 'prescriptionId';
 
-    protected $useAutoIncrement = false;
+		protected $useAutoIncrement = true;
 
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'pharmacistId'
-			
-			                          , 'photo', 'idImage', 'password','professionLicense','hospitalId'];
+		protected $allowedFields = ['name', 'dose', 'notes', 'examId'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -33,9 +31,7 @@ class PharmacistModel extends Model
 			'address' => 'required|max_length[255',
 			'image' => 'required|max_length[255]',
 			'idImage' => 'required|max_length[255]',
-			'professionLicense' =>'required',
-			'hospitalId' =>'required',
-			'goodStanding' =>'required',
+			'position' =>'required',
 			'password' => 'required|max_length[255]|min_length[8]',
 			
 		];
@@ -45,4 +41,5 @@ class PharmacistModel extends Model
 			'required' => '{filed} is required'
 		];
     protected $skipValidation     = true;
+
 }

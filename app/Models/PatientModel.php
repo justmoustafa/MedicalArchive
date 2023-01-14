@@ -16,7 +16,7 @@ class PatientModel extends Model
 
 		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'patientId'
 			
-			                          , 'image', 'idImage', 'password'];
+			                          , 'personalPhoto', 'idImage', 'password'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

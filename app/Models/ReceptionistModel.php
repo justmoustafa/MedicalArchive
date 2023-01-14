@@ -7,16 +7,16 @@ use CodeIgniter\Model;
 class ReceptionistModel extends Model
 {
     protected $table      = 'receptionists';
-    protected $primaryKey = 'receptionistsId';
+    protected $primaryKey = 'receptionistId';
 
     protected $useAutoIncrement = false;
 
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'receptionistsId'
+		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'receptionistId'
 			
-			                          , 'image', 'idImage', 'password'];
+			                          , 'personalPhoto', 'hospitalId', 'idImage', 'password'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

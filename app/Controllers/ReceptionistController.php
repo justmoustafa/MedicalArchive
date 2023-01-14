@@ -3,25 +3,21 @@
 namespace App\Controllers;
 
 use App\Libraries\PatientLibrary;
-use App\Libraries\ExaminationLibrary;
+use App\Libraries\ReceptionistLibrary;
+use App\Libraries\WaitListLibrary;
 use App\Libraries\HospitalLibrary;
-use App\Libraries\DoctorLibrary;
 use App\Libraries\DepartmentLibrary;
-use App\Libraries\PrescriptionLibrary;
+use App\Libraries\DepartmentHospitalLibrary;
+use App\Libraries\DoctorLibrary;
 
 
-class PatientController extends BaseController 
+class ReceptionistController extends BaseController 
 {
 
-    public function __construct(private PatientLibrary $patientLib, private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib )
+    public function __construct(private ReceptionistLibrary $receptionistLib, private DepartmentHospitalLibrary $depHosLib ,private DoctorLibrary $doctorLib, private PatientLibrary $patientLib, private HospitalLibrary $hospitalLib, private DepartmentLibrary $departmentLib, private WaitListLibrary $waitListLib)
     {
 			$this->request = service('request');
     }
-
-    public function index()
-    {
-		return view('index');
-	}
 
 	public function login(){
 
@@ -45,35 +41,33 @@ class PatientController extends BaseController
 				];
 
 				if (! $this->validate($validationRules)) {
-                return view('patientLogin', [
+                return view('receptionistLogin', [
                     'validation' => $this->validator,
                 ]);
             }
-				$userExists = $this->patientLib->retrieve($loginData['id']);	
+				$userExists = $this->receptionistLib->retrieve($loginData['id']);	
 				if( $userExists ){
-					$userData = $this->patientLib->getEntity()->toArray();
+					$userData = $this->receptionistLib->getEntity()->toArray();
 
 					if( $userData['password'] == $loginData['password'] ){
 						$session = session();
-						$session->set(['id' => $userData['patientId']]);
+						$session->set(['id' => $userData['receptionistId']]);
 						$session->set(['userName' => $userData['firstName'].' '.$userData['lastName']]);
-						return redirect()->to(base_url('patient'));
+						return redirect()->to(base_url('receptionist'));
 					}else{
                            $data['wrongPassword'] = 'Password is incorrect';
-							return view('patientLogin',$data);
+							return view('receptionistLogin',$data);
                         }
 				}else {
                        $data['userNotExist'] = 'There is no such user';
-						return view('patientLogin',$data);
+						return view('receptionistLogin',$data);
 				}
 		}
-		return view('patientLogin');
+		return view('receptionistLogin');
 	}
 
 	public function registeration()
 	{
-			helper(['form']);
-
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
@@ -161,39 +155,51 @@ class PatientController extends BaseController
 		}
 	}	
 
-	public function patient(){
-
-
-		$exams = $this->examLib->retrieveWhere('patientId',session()->get('id'));
-
-		if(count($exams) > 0){
-				foreach( $exams as $exam ){
-						$this->hospitalLib->retrieve( $exam->hospitalId );
-						$this->doctorLib->retrieve( $exam->doctorId );
-						$this->departmentLib->retrieve( $exam->departmentId );
-						$prescriptions =  $this->prescriptionLib->retrieveWhere('examId', $exam->examId );
-
-						$data[$exam->examId] = [
-								'hospitalName' => $this->hospitalLib->getEntity()->name,
-								'doctorName' => $this->doctorLib->getEntity()->firstName.' '.$this->doctorLib->getEntity()->lastName,
-								'departmentName' => $this->departmentLib->getEntity()->name,
-								'date' => $exam->examDate,
-								'prescriptions' =>[] 
-							];
-						foreach( $prescriptions as $prescription){
-								$data[$exam->examId]['prescriptions']+= [
-											$prescription->prescriptionId => [
-														'prescriptionName' => $prescription->name ,
-														'prescriptionDose' => $prescription->dose,
-														'prescriptionNotes' => $prescription->notes
-										]
-									];
+	public function receptionist(){
+		if(session()->get('id') !== null){
+				if($this->receptionistLib->isExist(session()->get('id'))){
+					if( $this->request->getMethod() == 'post'){
+							$formData= $this->request->getPost();
+							$patientExists = $this->patientLib->retrieve($formData['patientId']);	
+							if( $patientExists ){
+								$patientData = $this->patientLib->getEntity();
+								$waitListData['patientId'] = $patientData->patientId;
+								$waitListData['date'] = date('Y-m-d H:i:s');
 								
+							    $this->receptionistLib->retrieve(session()->get('id'));	
+								$receptionistData = $this->receptionistLib->getEntity();
+								$waitListData['receptionistId'] = $receptionistData->receptionistId;
+
+							    $departmentData = $this->departmentLib->findWhere('name', $formData['department']);	
+								$waitListData['hospitalId'] = $receptionistData->hospitalId;
+								$waitListData['departmentId'] = $departmentData[0]->departmentId;
+							    $depHos = $this->depHosLib->findWhere('hospitalId' ,$receptionistData->hospitalId);	
+								foreach($depHos as $id){
+									
+								}
+
+							    $this->doctorLib->retrieve($formData['patientId']);	
+								$doctorData = $this->doctorLib->getEntity();
+								
+								$this->hospitalLib->retrieve($receptionistData->receptionistId);	
+								$hospitalData = $this->hospitalLib->getEntity();
+
+/*								$tableData[$waitListData['patientId']] =[
+										'patientName'=> $patientData->firstName.' '.$patientData->lastName,
+										'departmentName' => $doctorData->name,
+										'doctorName' => $this->doctorData->firstName.' '.$patientData->lastName,
+								];
+*/
+								$this->waitListLib->fillEntity($waitListData);
+								$this->waitListLib->insert();
+							}
+							return view('receptionist');
+					}else{
+							return view('receptionist');
 						}
 				}
-				return view('patient',['data' => $data]);
-			}
-				return view('index');
-    
+				return 'there is not such receptionist id';
 		}
+		return 'you have login first';
+	}
 }
