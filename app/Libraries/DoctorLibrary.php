@@ -76,5 +76,8 @@ class DoctorLibrary
     {
         return $this->Entity->fill($data);
     }
+	public function getLastInsertionID(){
+		return $this->Model->getInsertID();
+	}
 
 }

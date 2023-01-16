@@ -115,7 +115,7 @@
 					 endif;
 					if(isset($userNotExist)):?>
 							<p class="alert alert-danger">
-								<?php echo $userNotExist;?>				</p>
+								<?php echo $userNotExist;?>	
 							</p>
                 <?php
 					 endif; ?>

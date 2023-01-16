@@ -15,16 +15,35 @@
 
   <!-- Start Header -->
   <section class="header">
-<?php
-	echo view('header');
-?> 
- <!-- End Header -->
+		<nav>
+			<div class="container">
+			  <div class="logo">
+				<a href="./index.html"><img src="./images/logo-en-black.svg" alt=""></a>
+			  </div>
+			  <ul class="main-links">
+				<li>
+				  <a href="./index.html">Home</a> 
+				</li>
+				<li>
+				  <a class="active" href="./doctor.html">Doctor</a>
+				</li>
+
+				<div class="log-out">
+				  <a href='logOut'><button>Log out</button></a>
+				</div>
+			  </ul>
+			  <i class="fa-sharp fa-solid fa-bars"></i>        
+			  
+			</div>
+		  </nav>
+		  
+		<!-- End Header -->
 
   <!-- Start Landing Page -->
   <div class="landing">
     <div class="container">
       <div class="text">
-        <h1>Welcome Dr <span>Ali Ahmed</span></h1>
+	  <h1>Welcome Dr <span><?=session()->get('userName');?></span></h1>
       </div>
     </div>
   </div>
@@ -34,24 +53,29 @@
   <!-- Start Detection -->
   <section class="detection">
     <div class="container">
-      <form>
-      <table>
-        <thead>
-          <th>Id</th>
-          <th>patient name</th>
-          <th>age</th>
-          <th>examination</th>
-        </thead>
-        <tr>
-          <td>01</td>
-          <td>ahmed hassan</td>
-          <td>30</td>
-          <td><input class="valid" type="text"></td>
-        </tr>
-      </table>
+<?php
+	foreach($doctorTable as $dt){
+?>
+      <form action="doctor" method="post">
+			  <table>
+				<thead>
+				  <th>patient name</th>
+				  <th>age</th>
+				  <th>examination</th>
+				</thead>
+				<tr>
+				<td><?= $dt['patientName']?></td>
+				<td><?= $dt['patientAge']?></td>
+				  <td><input name='presc' class="valid" type="text">
+					<input name="waitListId" value="<?= $dt['waitListId'] ?>" style="display:none">
+</td>
+				</tr>
+			  </table>
 
       <button type="submit">Submit</button>
-    </form>
+	</form>
+		<?php }
+?>
     </div>
   </section>
   <!-- End Detection -->

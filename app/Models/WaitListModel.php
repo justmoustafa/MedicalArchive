@@ -14,7 +14,7 @@ class WaitListModel extends Model
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['id','patientId', 'hospitalId', 'departmentId', 'receptionistId', 'date', 'confirmEntrance'];
+		protected $allowedFields = ['id','patientId' , 'doctorId', 'hospitalId', 'departmentId', 'receptionistId', 'date', 'confirmEntrance'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

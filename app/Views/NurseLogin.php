@@ -103,7 +103,7 @@
     <div class="login">
       <h1 class="text-center">Login</h1>
       <div class="container">
-        <form action="nurseLogin" method="post">
+         <form action="pharmacistLogin" method="post">
 			<?php
                     if(isset($validation)):
                         if($validation->hasError('id')):?>
@@ -115,7 +115,7 @@
 					 endif;
 					if(isset($userNotExist)):?>
 							<p class="alert alert-danger">
-								<?php echo $userNotExist;?>	
+								<?php echo $userNotExist;?>				</p>
 							</p>
                 <?php
 					 endif; ?>

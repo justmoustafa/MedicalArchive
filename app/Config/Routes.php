@@ -6,7 +6,10 @@ use App\Controllers\MasterController;
 use App\Controllers\PatientController;
 use App\Controllers\ReceptionistController;
 use App\Controllers\PharmacistController;
+use App\Controllers\NurseController;
+use App\Controllers\DoctorController;
 use App\Models\PatientModel;
+use App\Models\NurseModel;
 use App\Models\ReceptionistModel;
 use App\Models\WaitListModel;
 use App\Models\PharmacistModel;
@@ -150,6 +153,23 @@ $routes->match(['post','get'],'receptionistLogin', static function()use($contain
    return $receptionist->login(); 
 });
 
+$routes->post('deleteFromReception', static function()use($container)
+{
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(ReceptionistModel::class, ReceptionistModel::class); 
+    $container->set(WaitListModel::class, WaitListModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(DepartmentHospitalModel::class, DepartmentHospitalModel::class); 
+    $container->set(PrescriptionModel::class, PrescriptionModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $receptionist= $container->get(ReceptionistController::class);
+   return $receptionist->deleteFromReception(); 
+});
+
+
 $routes->match(['post','get'],'receptionist', static function()use($container)
 {
     $container->set(PatientModel::class, PatientModel::class); 
@@ -198,6 +218,7 @@ $routes->match(['post','get'], 'pharmacist', static function()use($container)
     $master= $container->get(PharmacistController::class);
    return $master->pharmacist(); 
 });
+
 $routes->match(['post','get'], 'pharmacistLogin', static function()use($container)
 {
     $container->set(PatientModel::class, PatientModel::class); 
@@ -212,6 +233,81 @@ $routes->match(['post','get'], 'pharmacistLogin', static function()use($containe
     $pharmacist= $container->get(PharmacistController::class);
    return $pharmacist->login(); 
 });
+
+$routes->match(['post','get'], 'nurseRegisteration', static function()use($container)
+{
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(NurseModel::class, NurseModel::class); 
+    $container->set(ExaminationModel::class, ExaminationModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $nurse = $container->get(NurseController::class);
+   return $nurse->registeration(); 
+});
+
+
+$routes->match(['post','get'], 'nurseLogin', static function()use($container)
+{
+    $container->set(NurseModel::class, NurseModel::class); 
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(WaitListModel::class, WaitListModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $nurse = $container->get(NurseController::class);
+   return $nurse->login(); 
+});
+
+$routes->match(['post','get'], 'nurse', static function()use($container)
+{
+    $container->set(NurseModel::class, NurseModel::class); 
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(WaitListModel::class, WaitListModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $master= $container->get(NurseController::class);
+   return $master->nurse(); 
+});
+
+$routes->match(['post','get'], 'doctor', static function()use($container)
+{
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(ExaminationModel::class, ExaminationModel::class); 
+    $container->set(WaitListModel::class, WaitListModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(PrescriptionModel::class, PrescriptionModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $doctor = $container->get(DoctorController::class);
+   return $doctor->doctor(); 
+});
+
+
+$routes->match(['post','get'], 'doctorLogin', static function()use($container)
+{
+    $container->set(PatientModel::class, PatientModel::class); 
+    $container->set(ExaminationModel::class, ExaminationModel::class); 
+    $container->set(HospitalModel::class, HospitalModel::class); 
+    $container->set(DoctorModel::class, DoctorModel::class); 
+    $container->set(DepartmentModel::class, DepartmentModel::class); 
+    $container->set(PrescriptionModel::class, PrescriptionModel::class); 
+    $container->set(Entity::class, Entity::class); 
+	
+    $doctor = $container->get(DoctorController::class);
+   return $doctor->login(); 
+});
+
+
 
 $routes->get('logOut','MasterController::logout');
 /*

@@ -2,14 +2,14 @@
 
 namespace App\Libraries;
 
-use App\Models\ExaminationModel;
+use App\Models\NurseModel;
 
 use CodeIgniter\Entity\Entity;
 
-class ExaminationLibrary  
+class NurseLibrary  
 {
 
-    public function __construct(private ExaminationModel $Model, private Entity $Entity )
+    public function __construct(private NurseModel $Model, private Entity $Entity )
     {
     }
 
@@ -21,11 +21,6 @@ class ExaminationLibrary
         return $this->Model->save($this->Entity);
     }
 
-	public function retrieveWhere($columnName, $value)
-	{
-		return $this->Model->where($columnName, $value)->findAll();
-	}
-
     public function retrieve($userId):bool
     {
         if($this->Model->find($userId))
@@ -33,22 +28,31 @@ class ExaminationLibrary
             $this->Entity = $this->Model->find($userId);
 			return true;
         }
-
         return false;
     }
-
-    public function update($userId):bool
-    {
-        if($this->Model->find($userId)=== $this->Entity)
+    public function isExist($userId):bool
+	{
+        if($this->Model->find($userId))
         {
-            return $this->Model->update($userId, $this->Entity); 
+			return true;
         }
         return false;
     }
 
+
+	public function findWhere($columnName, $value)
+	{
+		return $this->Model->where($columnName, $value)->findAll();
+	}
+	
+	public function update($userId)
+    {
+        return $this->Model->save($this->Entity); 
+    }
+
     public function delete($userId):bool
     {
-        if($this->Model->find($userId) != null)
+        if($this->Model->find($userId))
         {
             return  $this->Model->delete($userId);
         }
@@ -68,7 +72,5 @@ class ExaminationLibrary
     {
         return $this->Entity->fill($data);
     }
-	public function getLastInsertionID(){
-		return $this->Model->getInsertID();
-	}
+
 }

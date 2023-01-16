@@ -21,7 +21,7 @@ class WaitListLibrary
         return $this->Model->save($this->Entity);
     }
 
-	public function retrieveWhere($columnName, $value)
+	public function findWhere($columnName, $value)
 	{
 		return $this->Model->where($columnName, $value)->findAll();
 	}
@@ -39,7 +39,7 @@ class WaitListLibrary
 
     public function update($userId):bool
     {
-        if($this->Model->find($userId)=== $this->Entity)
+        if($this->Model->find($userId)!== null)
         {
             return $this->Model->update($userId, $this->Entity); 
         }

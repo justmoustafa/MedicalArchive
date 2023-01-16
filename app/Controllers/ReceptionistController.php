@@ -158,48 +158,113 @@ class ReceptionistController extends BaseController
 	public function receptionist(){
 		if(session()->get('id') !== null){
 				if($this->receptionistLib->isExist(session()->get('id'))){
+					$this->receptionistLib->retrieve(session()->get('id'));	
+					$receptionistData = $this->receptionistLib->getEntity();
+
 					if( $this->request->getMethod() == 'post'){
 							$formData= $this->request->getPost();
 							$patientExists = $this->patientLib->retrieve($formData['patientId']);	
+
 							if( $patientExists ){
 								$patientData = $this->patientLib->getEntity();
 								$waitListData['patientId'] = $patientData->patientId;
 								$waitListData['date'] = date('Y-m-d H:i:s');
 								
-							    $this->receptionistLib->retrieve(session()->get('id'));	
-								$receptionistData = $this->receptionistLib->getEntity();
-								$waitListData['receptionistId'] = $receptionistData->receptionistId;
+							   	$waitListData['receptionistId'] = $receptionistData->receptionistId;
+							    $departmentsData = $this->departmentLib->findWhere('name', $formData['department']);	
 
-							    $departmentData = $this->departmentLib->findWhere('name', $formData['department']);	
 								$waitListData['hospitalId'] = $receptionistData->hospitalId;
-								$waitListData['departmentId'] = $departmentData[0]->departmentId;
-							    $depHos = $this->depHosLib->findWhere('hospitalId' ,$receptionistData->hospitalId);	
-								foreach($depHos as $id){
-									
-								}
+								$waitListData['departmentId'] = $departmentsData[0]->departmentId;
+							    
 
-							    $this->doctorLib->retrieve($formData['patientId']);	
-								$doctorData = $this->doctorLib->getEntity();
+								$doctors= $this->doctorLib->findWhere('departmentId',$waitListData['departmentId']); 
+
+								$doctorId = null;
+								foreach($doctors as $d){
+										if($formData['doctor'] == $d->firstName.' '.$d->lastName)
+												$doctorId = $d->doctorId;
+								}
+								$waitListData['doctorId'] = $doctorId;
+								$waitListData['confirmEntrance'] = 0;
 								
 								$this->hospitalLib->retrieve($receptionistData->receptionistId);	
 								$hospitalData = $this->hospitalLib->getEntity();
 
-/*								$tableData[$waitListData['patientId']] =[
-										'patientName'=> $patientData->firstName.' '.$patientData->lastName,
-										'departmentName' => $doctorData->name,
-										'doctorName' => $this->doctorData->firstName.' '.$patientData->lastName,
-								];
-*/
+
 								$this->waitListLib->fillEntity($waitListData);
 								$this->waitListLib->insert();
+								
+								return redirect()->to(base_url('receptionist'))->with('success', 'success');
 							}
-							return view('receptionist');
+								return redirect()->to(base_url('receptionist'))->with('userNotExist' , 'there is no such patient ID');
 					}else{
-							return view('receptionist');
+							
+								$receptWaitList = $this->waitListLib->findWhere('receptionistId', session()->get('id'));
+
+								$receptionistTable = [];
+
+								foreach($receptWaitList as $r){
+									if($r->confirmEntrance !== 1){
+										$this->patientLib->retrieve($r->patientId);
+										$this->doctorLib->retrieve($r->doctorId);
+										$this->departmentLib->retrieve($r->departmentId);
+										$patientId = [
+											'patientName' => $this->patientLib->getEntity()->firstName." ".$this->patientLib->getEntity()->lastName,
+								      		'departmentName' => $this->departmentLib->getEntity()->name,
+
+											'doctorName' => $this->doctorLib->getEntity()->firstName." ".$this->doctorLib->getEntity()->lastName,
+											'waitListId' => $r->id,
+
+										];
+										array_push($receptionistTable,$patientId );
+								}
+						}
+								$depHos = $this->depHosLib->findWhere('hospitalId' ,$receptionistData->hospitalId);	
+								$departmentsNames = [];	
+								foreach($depHos as $dh){
+										$this->departmentLib->retrieve($dh->departmentId);
+										$dep = $this->departmentLib->getEntity();
+										array_push($departmentsNames,$dep->name );
+								}
+								$depDoctors = [];
+
+								if($this->request->isAJAX()){
+										$ajaxData = $this->request->getVar();
+										$departmentsData = $this->departmentLib->findWhere('name',$ajaxData['department']);
+										
+										$doctors= $this->doctorLib->findWhere('departmentId',$departmentsData[0]->departmentId); 
+
+
+										foreach($doctors as $d){
+												array_push($depDoctors,$d->firstName.' '.$d->lastName );
+										}
+										return json_encode($depDoctors);
+
+								}
+								
+								return view('receptionist',['departmentsNames' =>$departmentsNames, 'receptionistTable'=> $receptionistTable] );
 						}
 				}
 				return 'there is not such receptionist id';
 		}
 		return 'you have login first';
+	}
+	public function deleteFromReception(){
+			if(session()->get('id') !== null){
+				if($this->receptionistLib->isExist(session()->get('id'))){
+					if($this->request->isAJAX()){
+						$ajaxData = $this->request->getVar();
+						if($this->waitListLib->delete($ajaxData['waitListId'])){
+								$data = array('response' => 'success');
+						
+						}else{
+								$data = array('response' => 'failure');
+						}
+						return json_encode($data);
+
+					}
+			
+				}
+			}	
 	}
 }

@@ -7,13 +7,14 @@ use App\Libraries\ExaminationLibrary;
 use App\Libraries\HospitalLibrary;
 use App\Libraries\DoctorLibrary;
 use App\Libraries\DepartmentLibrary;
+use App\Libraries\WaitListLibrary;
 use App\Libraries\PrescriptionLibrary;
 
 
 class DoctorController extends BaseController 
 {
 
-    public function __construct(private PatientLibrary $patientLib, private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib )
+    public function __construct(private PatientLibrary $patientLib, private WaitListLibrary $waitListLib ,private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib )
     {
 			$this->request = service('request');
     }
@@ -46,23 +47,24 @@ class DoctorController extends BaseController
             }
 				$userExists = $this->doctorLib->retrieve($loginData['id']);	
 				if( $userExists ){
-					$userData = $this->patientLib->getEntity()->toArray();
+					$userData = $this->doctorLib->getEntity()->toArray();
 
 					if( $userData['password'] == $loginData['password'] ){
+						session_unset();
 						$session = session();
-						$session->set(['id' => $userData['patientId']]);
+						$session->set(['id' => $userData['doctorId']]);
 						$session->set(['userName' => $userData['firstName'].' '.$userData['lastName']]);
-						return redirect()->to(base_url('patient'));
+						return redirect()->to(base_url('doctor'));
 					}else{
                            $data['wrongPassword'] = 'Password is incorrect';
-							return view('patientLogin',$data);
+							return view('doctorLogin',$data);
                         }
 				}else {
                        $data['userNotExist'] = 'There is no such user';
-						return view('patientLogin',$data);
+						return view('doctorLogin',$data);
 				}
 		}
-		return view('patientLogin');
+		return view('doctorLogin');
 	}
 
 	public function registeration()
@@ -156,40 +158,48 @@ class DoctorController extends BaseController
 		}
 	}	
 
-	public function patient(){
-
-
-		$exams = $this->examLib->retrieveWhere('patientId',session()->get('id'));
-
-		if(count($exams) > 0){
-
-				foreach( $exams as $exam ){
-						$this->hospitalLib->retrieve( $exam->hospitalId );
-						$this->doctorLib->retrieve( $exam->doctorId );
-						$this->departmentLib->retrieve( $exam->departmentId );
-						$prescriptions =  $this->prescriptionLib->retrieveWhere('examId', $exam->examId );
-
-						$data[$exam->examId] = [
-								'hospitalName' => $this->hospitalLib->getEntity()->name,
-								'doctorName' => $this->doctorLib->getEntity()->firstName.' '.$this->doctorLib->getEntity()->lastName,
-								'departmentName' => $this->departmentLib->getEntity()->name,
-								'date' => $exam->examDate,
-								'prescriptions' =>[] 
-							];
-						foreach( $prescriptions as $prescription){
-								$data[$exam->examId]['prescriptions']+= [
-											$prescription->prescriptionId => [
-														'prescriptionName' => $prescription->name ,
-														'prescriptionDose' => $prescription->dose,
-														'prescriptionNotes' => $prescription->notes
-										]
-									];
-								
+	public function doctor(){
+			if(session()->get('id') !== null){
+				if($this->doctorLib->isExist(session()->get('id'))){
+						if( $this->request->getMethod() == 'post'){
+								$formData= $this->request->getPost();
+								$this->waitListLib->retrieve($formData['waitListId']);
+								$wlEntity = $this->waitListLib->getEntity();
+								$examTable['hospitalId'] = $wlEntity->hospitalId;  
+								$examTable['departmentId'] = $wlEntity->departmentId;  
+								$examTable['patientId'] = $wlEntity->patientId;  
+								$examTable['doctorId'] = session()->get('id');  
+								$examTable['examDate'] = date('Y-m-d H:i:s');
+								$examId = $this->examLib->getLastInsertionID();
+								$examTable['examId'] = $examId + 1;
+								$this->examLib->fillEntity($examTable);
+								$this->examLib->insert();
+								$examId = $this->examLib->getLastInsertionID();
+								return $examId;
+								/*
+								 * in examinations table make primary key auto increament
+								 * */
 						}
+						$this->doctorLib->retrieve(session()->get('id'));
+	
+						$exams = $this->waitListLib->findWhere('departmentId',$this->doctorLib->getEntity()->departmentId);
+						$doctorTable = [];
+						foreach($exams as $exam){
+							if($exam->confirmEntrance == 1){
+									$this->patientLib->retrieve($exam->patientId);
+									$exam->patientId = [
+										'patientName' => $this->patientLib->getEntity()->firstName." ".$this->patientLib->getEntity()->lastName,
+										'patientAge' => $this->patientLib->getEntity()->age,
+										'waitListId' => $exam->id
+									];
+									array_push($doctorTable, $exam->patientId);
+							}
+						}
+						
+						return view('doctor',['doctorTable' => $doctorTable]);
 				}
-				return view('patient',['data' => $data]);
+				return 'there is no such doctor id';
 			}
-				return view('index');
-    
+			return 'you have to login first';
 		}
 }

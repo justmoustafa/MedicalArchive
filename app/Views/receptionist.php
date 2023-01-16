@@ -61,19 +61,36 @@
             <input type="date">
           </div>
 		  </div>
--->
+		  -->
+<?php
+					if(session()->getFlashdata('success') !== null):?>
+							<p class="alert alert-danger">
+								<?= session()->getFlashdata('success');?>			
+							</p>
+                <?php
+					 endif; ?>
+<?php
+					if(session()->getFlashdata('userNotExist') !== null):?>
+							<p class="alert alert-danger">
+								<?= session()->getFlashdata('userNotExist');?>			
+							</p>
+                <?php
+					 endif; ?>
+
+
+
+
+
         <input type="text" name="patientId" placeholder="national id">
+       
         <select name="department" id="departments">
-          <option>Departments</option>
-          <option value="Heart">Heart</option>
-          <option value="Heart">the teeth</option>
-          <option value="Heart">General Surgery</option>
-        </select>
-		<select name="doctor">
-          <option>Doctors</option>
-          <option value="Heart">Heart</option>
-          <option value="Heart">the teeth</option>
-          <option value="Heart">General Surgery</option>
+<?php
+		foreach($departmentsNames as $d){
+?>		   
+		<option><?=$d ?></option>
+<?php } ?>
+		  </select>
+		<select id='doctors' name="doctor">
         </select>
 
       <button type="submit">Submit</button>
@@ -102,26 +119,108 @@
           <th>doctor name</th>
           <th>Remove</th>
         </thead>
+<?php
+		foreach($receptionistTable as $rt){
+?>
         <tr>
           <td>01</td>
-          <td>mostafa</td>
-          <td>Heart</td>
-          <td>Ali</td>
-          <td><button class="btn btn-danger">Delete</button></td>
-        </tr>
-        <tr>
-          <td>02</td>
-          <td>ahmed</td>
-          <td>Heart</td>
-          <td>Mohamed</td>
-          <td><button class="btn btn-danger">Delete</button></td>
-        </tr>
-      </table>
+		  <td><?= $rt['patientName']?></td>
+		  <td><?= $rt['departmentName']?></td>
+		  <td><?= $rt['doctorName']?></td>
+          <td><a class="del" value="<?= $rt['waitListId']?>" ><button  class="btn btn-danger">Delete</button></a></td>
+		</tr>
+<?php }?>
+              </table>
     </div>
   </section>
-  <!-- End Bookings -->
+ <!-- End Bookings -->
 
     <!-- <script src="./js/bootstrap.min.js"></script> -->
   <script src="./js/plugin-receptionist.js" type="module"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function(){
+    $("#departments").on("input", function(){
+		departmentName =$("#departments").val();
+		$.ajax({
+			url:"<?= base_url().'/receptionist'?>",
+			type:"get",
+			datatype:"json",
+			data:{
+				department:departmentName
+},
+		success:function(data){
+				data = JSON.parse(data);
+				data.forEach(function(e){
+						$("#doctors").empty();
+						$("#doctors").append("<option>"+e+"</option>");
+				});}
+
+		});
+	});		
+});					
+$(document).ready(function(){
+    $(".del").on("click", function(){
+			var delID = $(this).attr("value");
+			if(delID == ''){
+				alert('There is no specified ID');
+			}else{
+			const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger mr-3'
+  },
+  buttonsStyling: false
+})
+
+swalWithBootstrapButtons.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Yes, delete it!',
+  cancelButtonText: 'No, cancel!',
+  reverseButtons: true
+}).then((result) => {
+  if (result.isConfirmed) {
+
+		$.ajax({
+			url:"<?= base_url().'/deleteFromReception'?>",
+			type:"post",
+			datatype:"json",
+			data:{
+				waitListId:delID
+},
+		success:function(data){
+ swalWithBootstrapButtons.fire(
+      'Deleted!',
+      'Your file has been deleted.',
+      'success'
+    )
+setTimeout(() => {
+location.reload()
+},"2500")
+
+																		}
+		 });
+
+
+   
+  } else if (
+    /* Read more about handling dismissals below */
+    result.dismiss === Swal.DismissReason.cancel
+  ) {
+    swalWithBootstrapButtons.fire(
+      'Cancelled',
+      'Your imaginary file is safe :)',
+      'error'
+    )
+  }
+});
+			}
+	});
+});
+</script>
 </body>
 </html>
