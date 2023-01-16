@@ -77,7 +77,12 @@ class PatientController extends BaseController
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
-			   
+			   	
+				if( $this->approvingLib->isExist($registerationData['nurseId']) == null){	
+					return view('nurseRegisteration',['registBefore' => 'This user has registered before'] );
+				}
+
+
 				$validationRules = [
                     'patientId' =>[
                         'rules' =>'required|exact_length[14]',
@@ -184,7 +189,6 @@ class PatientController extends BaseController
 								$data[$exam->examId]['prescriptions']+= [
 											$prescription->prescriptionId => [
 														'prescriptionName' => $prescription->name ,
-														'prescriptionDose' => $prescription->dose,
 														'prescriptionNotes' => $prescription->notes
 										]
 									];

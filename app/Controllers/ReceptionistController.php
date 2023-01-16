@@ -9,12 +9,12 @@ use App\Libraries\HospitalLibrary;
 use App\Libraries\DepartmentLibrary;
 use App\Libraries\DepartmentHospitalLibrary;
 use App\Libraries\DoctorLibrary;
-
+use App\Libraries\ApprovingLibrary;
 
 class ReceptionistController extends BaseController 
 {
 
-    public function __construct(private ReceptionistLibrary $receptionistLib, private DepartmentHospitalLibrary $depHosLib ,private DoctorLibrary $doctorLib, private PatientLibrary $patientLib, private HospitalLibrary $hospitalLib, private DepartmentLibrary $departmentLib, private WaitListLibrary $waitListLib)
+    public function __construct(private ReceptionistLibrary $receptionistLib, private DepartmentHospitalLibrary $depHosLib ,private DoctorLibrary $doctorLib, private PatientLibrary $patientLib, private HospitalLibrary $hospitalLib, private DepartmentLibrary $departmentLib, private WaitListLibrary $waitListLib , private ApprovingLibrary $approvingLib )
     {
 			$this->request = service('request');
     }
@@ -68,12 +68,20 @@ class ReceptionistController extends BaseController
 
 	public function registeration()
 	{
+
+			helper(['form']);
+			
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
-			   
+			   	
+				if( $this->approvingLib->isExist($registerationData['receptionistId']) !== null){	
+					return view('pharmacistRegisteration',['registBefore' => 'This user has registered before'] );
+				}
+
+
 				$validationRules = [
-                    'patientId' =>[
+                    'receptionistId' =>[
                         'rules' =>'required|exact_length[14]',
                         'errors' =>[
                                 'required' => 'Nationl ID is required',
@@ -104,7 +112,7 @@ class ReceptionistController extends BaseController
                                 'required' => 'address is required',
                         ]
 					],
-					              'password'=>[
+					 'password'=>[
                         'rules'=>'required',
                         'errors'=>[
                                 'required' => 'Password is required',
@@ -120,38 +128,42 @@ class ReceptionistController extends BaseController
 				];
 
 				if (! $this->validate($validationRules)) {
-						return view('patientRegisteration', [
+						return view('receptionistRegisteration', [
 							'validation' => $this->validator]);
 				}else{
-					if(! $this->patientLib->isExist($registerationData['patientId']))
+					if(! $this->receptionistLib->isExist($registerationData['receptionistId']))
 					{
 						$idImage = $this->request->getFile('idImage');
 						$personalPhoto = $this->request->getFile('personalPhoto');
 						if ($idImage->isValid()) {
 							if($personalPhoto->isValid()){
-								$idImage->store('./patients/idImages','idImage'.$registerationData['patientId']);
-								$personalPhoto->store('patients/personalPhotos','personalPhoto'.$registerationData['patientId']);
-								$registerationData['idImage'] = 'idImage' . $registerationData['patientId'];
-								$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['patientId'];
-								$this->patientLib->fillEntity($registerationData);
-								$insertResult = $this->patientLib->insert();
-								return redirect()->to(base_url('patientLogin'));
+								$idImage->store('receptionists/idImages','idImage'.$registerationData['receptionistId']);
+								$personalPhoto->store('receptionist/personalPhotos','personalPhoto'.$registerationData['receptionistId']);
+								$registerationData['idImage'] = 'idImage' . $registerationData['receptionistId'];
+								$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['receptionistId'];
+								$registerationData['id'] = $registerationData['receptionistId'];
+								$registerationData['position'] = 'receptionist';
+								$registerationData['submitionDate'] = date('Y-m-d H:i:s');;
+								$this->approvingLib->fillEntity($registerationData);
+								$insertResult = $this->approvingLib->insert();
+
+								return redirect()->to(base_url('receptionistLogin'));
 							}else{
-								return view('patientRegisteration',['inValidPersonalPhoto' => 'this image is invalid'] );
+								return view('receptionistRegisteration',['inValidPersonalPhoto' => 'this image is invalid'] );
 							}
 						}else{
-							return view('patientRegisteration',['inValidIdImage' => 'this image is invalid'] );
+							return view('receptionistRegisteration',['inValidIdImage' => 'this image is invalid'] );
 						}
 					}
 					else
 					{
-						return view('patientRegisteration',['failed' => 'Registeration attempt failed, this user already exists'] );
+						return view('receptionistRegisteration',['failed' => 'Registeration attempt failed, this user already exists'] );
 					}
 				}
 
 		}else{
 
-		return view('patientRegisteration');
+		return view('receptionistRegisteration');
 		}
 	}	
 

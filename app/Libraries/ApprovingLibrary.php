@@ -2,14 +2,14 @@
 
 namespace App\Libraries;
 
-use App\Models\PharmacistModel;
+use App\Models\ApprovingModel;
 
 use CodeIgniter\Entity\Entity;
 
-class PharmacistLibrary  
+class ApprovingLibrary  
 {
 
-    public function __construct(private PharmacistModel $Model, private Entity $Entity )
+    public function __construct(private ApprovingModel $Model, private Entity $Entity )
     {
     }
 
@@ -23,7 +23,7 @@ class PharmacistLibrary
 
     public function retrieve($userId):bool
     {
-        if($this->Model->find($userId))
+        if($this->isExist($userId))
         {
             $this->Entity = $this->Model->find($userId);
 			return true;
@@ -32,7 +32,7 @@ class PharmacistLibrary
     }
     public function isExist($userId)
 	{
-     return  $this->Model->find($userId);
+			 return $this->Model->find($userId);
     }
 
 
@@ -72,5 +72,8 @@ class PharmacistLibrary
     {
         return $this->Entity->fill($data);
     }
+	public function getLastInsertionID(){
+		return $this->Model->getInsertID();
+	}
 
 }

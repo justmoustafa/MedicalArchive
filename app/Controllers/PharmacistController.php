@@ -7,12 +7,13 @@ use App\Libraries\ExaminationLibrary;
 use App\Libraries\DoctorLibrary;
 use App\Libraries\PrescriptionLibrary;
 use App\Libraries\PharmacistLibrary;
+use App\Libraries\ApprovingLibrary;
 
 
 class PharmacistController extends BaseController 
 {
 
-    public function __construct(private PharmacistLibrary $pharmacistLib, private PatientLibrary $patientLib, private ExaminationLibrary $examLib, private DoctorLibrary $doctorLib, private PrescriptionLibrary $prescriptionLib )
+    public function __construct(private PharmacistLibrary $pharmacistLib, private PatientLibrary $patientLib, private ExaminationLibrary $examLib, private DoctorLibrary $doctorLib, private PrescriptionLibrary $prescriptionLib , private ApprovingLibrary $approvingLib )
     {
 			$this->request = service('request');
     }
@@ -77,7 +78,11 @@ class PharmacistController extends BaseController
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
-			   
+			   	
+				if( $this->approvingLib->isExist($registerationData['pharmacistId']) !== null){	
+					return view('pharmacistRegisteration',['registBefore' => 'This user has registered before'] );
+				}
+
 				$validationRules = [
                     'pharmacistId' =>[
                         'rules' =>'required|exact_length[14]',
@@ -142,9 +147,15 @@ class PharmacistController extends BaseController
 												$professionLicense->store('pharmacists/professionLicense','professionLicense'.$registerationData['pharmacistId']);
 												$registerationData['idImage'] = 'idImage' . $registerationData['pharmacistId'];
 												$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['pharmacistId'];
-												$this->pharmacistLib->fillEntity($registerationData);
-												$insertResult = $this->pharmacistLib->insert();
-												return redirect()->to(base_url('pharmacistLogin'));
+
+												$registerationData['id'] = $registerationData['pharmacistId'];
+												$registerationData['position'] = 'pharmacist';
+												$registerationData['submitionDate'] = date('Y-m-d H:i:s');;
+												
+												$this->approvingLib->fillEntity($registerationData);
+												$insertResult = $this->approvingLib->insert();
+												
+											return redirect()->to(base_url('pharmacistLogin'));
 									}else{
 												return view('pharmacistRegisteration',['inValidProfessoinLicense' => 'this image is invalid'] );
 									}

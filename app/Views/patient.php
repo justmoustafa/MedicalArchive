@@ -59,7 +59,8 @@
           <th>doctor department</th>
           <th>hospital name</th>
           <th>date</th>
-          <th>detection</th>
+          <th>medicines</th>
+          <th>notes</th>
         </thead>
 
 <?php
@@ -74,6 +75,13 @@ foreach( $data as $exam){?>
 <?php foreach($exam['prescriptions'] as $prescription ){?>
             <ul>
 			<li><?=$prescription['prescriptionName']?></li>
+            </ul>
+<?php }?>
+          </td>
+<td>
+<?php foreach($exam['prescriptions'] as $prescription ){?>
+            <ul>
+			<li><?=$prescription['prescriptionNotes']?></li>
             </ul>
 <?php }?>
           </td>

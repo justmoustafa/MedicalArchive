@@ -102,6 +102,7 @@
                   <img src="./images/patient-reg.png" >
                 </a>
               </div>
+
               <div class="person doctor" data-person="doctor">
                 <span>Doctor</span>
                 <a href="doctorLogin">
@@ -126,6 +127,13 @@
                   <img src="./images/receptionist-reg.png" >
                 </a>
               </div>
+			<div class="person patient" data-person="patient">
+                <span>Admin</span>
+                <a href="adminLogin">
+                  <img src="./images/patient-reg.png" >
+                </a>
+              </div>
+
             </div>
           </div>
         </div>

@@ -8,12 +8,13 @@ use App\Libraries\DoctorLibrary;
 use App\Libraries\DepartmentLibrary;
 use App\Libraries\NurseLibrary;
 use App\Libraries\WaitListLibrary;
+use App\Libraries\ApprovingLibrary;
 
 
 class NurseController extends BaseController 
 {
 
-    public function __construct(private NurseLibrary $nurseLib, private PatientLibrary $patientLib, private WaitListLibrary $waitListLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private HospitalLibrary $hospitalLib)
+    public function __construct(private NurseLibrary $nurseLib, private PatientLibrary $patientLib, private WaitListLibrary $waitListLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private HospitalLibrary $hospitalLib, private ApprovingLibrary $approvingLib)
     {
 			$this->request = service('request');
     }
@@ -72,7 +73,11 @@ class NurseController extends BaseController
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
-			   
+			   	
+				if( $this->approvingLib->isExist($registerationData['nurseId']) !== null){	
+					return view('nurseRegisteration',['registBefore' => 'This user has registered before'] );
+				}
+
 				$validationRules = [
                     'nurseId' =>[
                         'rules' =>'required|exact_length[14]',
@@ -138,8 +143,12 @@ class NurseController extends BaseController
 												$registerationData['idImage'] = 'idImage' . $registerationData['nurseId'];
 												$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['nurseId'];
 												$registerationData['professionLicense'] = 'professionLicense' . $registerationData['nurseId'];
-												$this->nurseLib->fillEntity($registerationData);
-												$insertResult = $this->nurseLib->insert();
+												$registerationData['id'] = $registerationData['nurseId'];
+												$registerationData['position'] = 'nurse';
+												$registerationData['submitionDate'] = date('Y-m-d H:i:s');;
+												
+												$this->approvingLib->fillEntity($registerationData);
+												$insertResult = $this->approvingLib->insert();
 												return redirect()->to(base_url('nurseLogin'));
 									}else{
 												return view('nurseRegisteration',['inValidProfessoinLicense' => 'this image is invalid'] );
@@ -204,14 +213,6 @@ class NurseController extends BaseController
 									}
 								return json_encode($data);
 									
-								}else if(isset($ajaxData['waitListIdAbsent'])){
-										if(count($nurseTable) <= 5){
-											$temp = $nurseTable[0];
-											unset($nurseTable[0]);
-											array_push($nurseTable, $temp);
-											return json_encode($nurseTable);
-										}	
-							
 								}
 							}
 					return view('nurse',['nurseTable' =>$nurseTable]);

@@ -147,7 +147,7 @@
                 <?php
 					endif;?>
 
-        <form action="pharmacistRegisteration" method='post' enctype="multipart/form-data">
+        <form action="receptionistRegisteration" method='post' enctype="multipart/form-data">
 <?php
                     if(isset($registBefore)):
                         ?>
@@ -159,15 +159,15 @@
  
 <?php
                     if(isset($validation)):
-                        if($validation->hasError('pharmacistId')):?>
+                        if($validation->hasError('receptionistId')):?>
 							<p class="alert alert-danger">
-								<?php echo $validation->getError('pharmacistId');?>
+								<?php echo $validation->getError('receptionistI');?>
 							</p>
                 <?php
                         endif;
 					endif;?> 
 
-            <input type="text" name='pharmacistId' placeholder="national id" value=<?= set_value('pharmacistId')?>>
+            <input type="text" name='receptionistId' placeholder="national id" value=<?= set_value('receptionistId')?>>
 <?php
                     if(isset($inValidIdImage)):
                         ?>

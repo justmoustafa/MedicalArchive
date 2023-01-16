@@ -30,13 +30,9 @@ class DoctorLibrary
         }
         return false;
     }
-    public function isExist($userId):bool
+    public function isExist($userId)
 	{
-        if($this->Model->find($userId))
-        {
-			return true;
-        }
-        return false;
+			return  $this->Model->find($userId);
     }
 
 

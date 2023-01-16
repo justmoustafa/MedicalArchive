@@ -4,17 +4,20 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class PrescriptionModel extends Model
+class ApprovingModel extends Model
 {
-    protected $table      = 'prescriptions';
-		protected $primaryKey = 'prescriptionId';
+    protected $table      = 'HospitalJoingApprovings';
+    protected $primaryKey = 'id';
 
-		protected $useAutoIncrement = true;
+    protected $useAutoIncrement = false;
 
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
+
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['name', 'prescriptionId', 'notes', 'examId'];
+		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'position', 'personalPhoto' ,'dateOfBirth', 'address', 'id'
+			
+			                          , 'image', 'idImage', 'password','specialization','goodStanding','professionLicense','departmentId','hospitalId', 'submitionDate'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -31,7 +34,11 @@ class PrescriptionModel extends Model
 			'address' => 'required|max_length[255',
 			'image' => 'required|max_length[255]',
 			'idImage' => 'required|max_length[255]',
-			'position' =>'required',
+			'specialization' =>'required',
+			'professionLicense' =>'required',
+			'departmentId' =>'required',
+			'hospitalId' =>'required',
+			'goodStanding' =>'required',
 			'password' => 'required|max_length[255]|min_length[8]',
 			
 		];
@@ -41,5 +48,4 @@ class PrescriptionModel extends Model
 			'required' => '{filed} is required'
 		];
     protected $skipValidation     = true;
-
 }

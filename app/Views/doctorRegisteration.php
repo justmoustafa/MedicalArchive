@@ -146,8 +146,7 @@
 							</p>
                 <?php
 					endif;?>
-
-        <form action="pharmacistRegisteration" method='post' enctype="multipart/form-data">
+        <form action="doctorRegisteration" method='post' enctype="multipart/form-data">
 <?php
                     if(isset($registBefore)):
                         ?>
@@ -159,15 +158,15 @@
  
 <?php
                     if(isset($validation)):
-                        if($validation->hasError('pharmacistId')):?>
+                        if($validation->hasError('doctorId')):?>
 							<p class="alert alert-danger">
-								<?php echo $validation->getError('pharmacistId');?>
+								<?php echo $validation->getError('doctorId');?>
 							</p>
                 <?php
                         endif;
 					endif;?> 
 
-            <input type="text" name='pharmacistId' placeholder="national id" value=<?= set_value('pharmacistId')?>>
+            <input type="text" name='doctorId' placeholder="national id" value=<?= set_value('doctorId')?>>
 <?php
                     if(isset($inValidIdImage)):
                         ?>
@@ -246,7 +245,7 @@
 							</p>
                 <?php
 					endif;?>
-             <input type="file" name='professionLicense' value=<?= set_value('professionLicense')?>>
+             <input type="file" name='professionLicense' value=<?= set_value('personalPhoto')?>>
 <?php
                     if(isset($inValidProfessionLicense)):
                         ?>
@@ -257,6 +256,15 @@
                 <?php
 					endif;?>
            	<input type="text" name='hospitalId' placeholder="Hospital Id" value=<?= set_value('hospitalId')?>> 
+<?php
+                    if(isset($validation)):
+                        if($validation->hasError('password')):?>
+							<p class="alert alert-danger">
+								<?php echo $validation->getError('password');?>
+							</p>
+                <?php
+                        endif;
+					endif;?>
            	<input type="text" name='password' placeholder="password" value=<?= set_value('password')?>> 
 <?php
                     if(isset($validation)):

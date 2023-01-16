@@ -15,9 +15,9 @@ class DoctorModel extends Model
 
     protected $useSoftDeletes = false;
 
-		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'doctorId'
+		protected $allowedFields = ['firstName', 'lastName', 'email', 'phone', 'personalPhoto' ,'dateOfBirth', 'address', 'doctorId'
 			
-			                          , 'image', 'idImage', 'password','specialization','goodStanding','professionLicense','departmentId','hospitalId'];
+			                          ,'idImage', 'password','specialization','goodStanding','professionLicense','departmentId','hospitalId'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

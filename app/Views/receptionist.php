@@ -120,10 +120,11 @@
           <th>Remove</th>
         </thead>
 <?php
+$count = 1;
 		foreach($receptionistTable as $rt){
 ?>
         <tr>
-          <td>01</td>
+		<td><?= $count++;?></td>
 		  <td><?= $rt['patientName']?></td>
 		  <td><?= $rt['departmentName']?></td>
 		  <td><?= $rt['doctorName']?></td>

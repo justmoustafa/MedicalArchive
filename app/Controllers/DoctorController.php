@@ -9,12 +9,13 @@ use App\Libraries\DoctorLibrary;
 use App\Libraries\DepartmentLibrary;
 use App\Libraries\WaitListLibrary;
 use App\Libraries\PrescriptionLibrary;
+use App\Libraries\ApprovingLibrary;
 
 
 class DoctorController extends BaseController 
 {
 
-    public function __construct(private PatientLibrary $patientLib, private WaitListLibrary $waitListLib ,private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib )
+    public function __construct(private PatientLibrary $patientLib, private WaitListLibrary $waitListLib ,private ExaminationLibrary $examLib, private HospitalLibrary $hospitalLib, private DoctorLibrary $doctorLib, private DepartmentLibrary $departmentLib, private PrescriptionLibrary $prescriptionLib, private ApprovingLibrary $approvingLib )
     {
 			$this->request = service('request');
     }
@@ -74,9 +75,13 @@ class DoctorController extends BaseController
 		if( $this->request->getMethod() == 'post'){
 			    $validation = \Config\Services::validation();
 				$registerationData = $this->request->getPost();
-			   
+				
+				if( $this->approvingLib->isExist($registerationData['doctorId']) !== null){	
+					return view('doctorRegisteration',['registBefore' => 'This user has registered before'] );
+				}
+				
 				$validationRules = [
-                    'patientId' =>[
+                    'doctorId' =>[
                         'rules' =>'required|exact_length[14]',
                         'errors' =>[
                                 'required' => 'Nationl ID is required',
@@ -107,7 +112,7 @@ class DoctorController extends BaseController
                                 'required' => 'address is required',
                         ]
 					],
-					              'password'=>[
+					'password'=>[
                         'rules'=>'required',
                         'errors'=>[
                                 'required' => 'Password is required',
@@ -123,38 +128,41 @@ class DoctorController extends BaseController
 				];
 
 				if (! $this->validate($validationRules)) {
-						return view('patientRegisteration', [
+						return view('doctorRegisteration', [
 							'validation' => $this->validator]);
 				}else{
-					if(! $this->patientLib->isExist($registerationData['patientId']))
+					if(! $this->doctorLib->isExist($registerationData['doctorId']))
 					{
 						$idImage = $this->request->getFile('idImage');
 						$personalPhoto = $this->request->getFile('personalPhoto');
 						if ($idImage->isValid()) {
 							if($personalPhoto->isValid()){
-								$idImage->store('./patients/idImages','idImage'.$registerationData['patientId']);
-								$personalPhoto->store('patients/personalPhotos','personalPhoto'.$registerationData['patientId']);
-								$registerationData['idImage'] = 'idImage' . $registerationData['patientId'];
-								$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['patientId'];
-								$this->patientLib->fillEntity($registerationData);
-								$insertResult = $this->patientLib->insert();
-								return redirect()->to(base_url('patientLogin'));
+								$idImage->store('doctors/idImages','idImage'.$registerationData['doctorId']);
+								$personalPhoto->store('doctors/personalPhotos','personalPhoto'.$registerationData['doctorId']);
+								$registerationData['idImage'] = 'idImage' . $registerationData['doctorId'];
+								$registerationData['personalPhoto'] = 'personalPhoto' . $registerationData['doctorId'];
+								$registerationData['id'] = $registerationData['doctorId'];
+								$registerationData['position'] = 'doctor';
+								$registerationData['submitionDate'] = date('Y-m-d H:i:s');;
+								$this->approvingLib->fillEntity($registerationData);
+								$insertResult = $this->approvingLib->insert();
+								return redirect()->to(base_url('doctorLogin'));
 							}else{
-								return view('patientRegisteration',['inValidPersonalPhoto' => 'this image is invalid'] );
+								return view('doctorRegisteration',['inValidPersonalPhoto' => 'this image is invalid'] );
 							}
 						}else{
-							return view('patientRegisteration',['inValidIdImage' => 'this image is invalid'] );
+							return view('doctorRegisteration',['inValidIdImage' => 'this image is invalid'] );
 						}
 					}
 					else
 					{
-						return view('patientRegisteration',['failed' => 'Registeration attempt failed, this user already exists'] );
+						return view('doctorRegisteration',['failed' => 'Registeration attempt failed, this user already exists'] );
 					}
 				}
 
 		}else{
 
-		return view('patientRegisteration');
+		return view('doctorRegisteration');
 		}
 	}	
 
@@ -170,15 +178,24 @@ class DoctorController extends BaseController
 								$examTable['patientId'] = $wlEntity->patientId;  
 								$examTable['doctorId'] = session()->get('id');  
 								$examTable['examDate'] = date('Y-m-d H:i:s');
-								$examId = $this->examLib->getLastInsertionID();
-								$examTable['examId'] = $examId + 1;
 								$this->examLib->fillEntity($examTable);
 								$this->examLib->insert();
+
 								$examId = $this->examLib->getLastInsertionID();
-								return $examId;
-								/*
-								 * in examinations table make primary key auto increament
-								 * */
+
+								$prescription['examId'] = $examId;
+								$names = explode(' ' ,$formData['presc']);
+								$notes = explode(',' ,$formData['notes']);
+
+								for($counter = 0; $counter < count($names); $counter++){
+									$prescription['name'] = $names[$counter];
+									$prescription['notes'] = $notes[$counter];
+									$this->prescriptionLib->fillEntity($prescription);
+									$this->prescriptionLib->insert();
+								}
+
+						$this->waitListLib->delete($formData['waitListId']);
+						return redirect()->to(base_url('doctor'));
 						}
 						$this->doctorLib->retrieve(session()->get('id'));
 	

@@ -9,7 +9,7 @@ class ExaminationModel extends Model
     protected $table      = 'examinations';
     protected $primaryKey = 'examId';
 
-    protected $useAutoIncrement = false;
+    protected $useAutoIncrement = true;
 
     protected $returnType     = \CodeIgniter\Entity\Entity::class;
     protected $useSoftDeletes = false;

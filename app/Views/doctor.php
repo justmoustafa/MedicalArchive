@@ -61,14 +61,15 @@
 				<thead>
 				  <th>patient name</th>
 				  <th>age</th>
-				  <th>examination</th>
+				  <th>prescriptions</th>
+				  <th>notes</th>
 				</thead>
 				<tr>
 				<td><?= $dt['patientName']?></td>
 				<td><?= $dt['patientAge']?></td>
-				  <td><input name='presc' class="valid" type="text">
-					<input name="waitListId" value="<?= $dt['waitListId'] ?>" style="display:none">
-</td>
+		        <td><input name='presc' class="valid" type="text"></td>
+		        <td><input name='notes' class="valid" type="text"></td>
+				<input name="waitListId" value="<?= $dt['waitListId'] ?>" style="display:none">
 				</tr>
 			  </table>
 

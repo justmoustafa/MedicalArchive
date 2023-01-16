@@ -148,6 +148,15 @@
 					endif;?>
         <form action="nurseRegisteration" method='post' enctype="multipart/form-data">
 <?php
+                    if(isset($registBefore)):
+                        ?>
+							<p class="alert alert-danger">
+								<?php echo $registBefore;?>
+							</p>
+                <?php
+					endif;?>
+ 
+<?php
                     if(isset($validation)):
                         if($validation->hasError('nurseId')):?>
 							<p class="alert alert-danger">
@@ -236,7 +245,7 @@
 							</p>
                 <?php
 					endif;?>
-             <input type="file" name='professionLicense' value=<?= set_value('personalPhoto')?>>
+             <input type="file" name='professionLicense' value=<?= set_value('professionLicense')?>>
 <?php
                     if(isset($inValidProfessionLicense)):
                         ?>

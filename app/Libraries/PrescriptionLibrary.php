@@ -63,4 +63,8 @@ class PrescriptionLibrary
     {
         return $this->Entity = $entity;
     }
+    public function fillEntity($data)
+    {
+        return $this->Entity->fill($data);
+    }
 }
